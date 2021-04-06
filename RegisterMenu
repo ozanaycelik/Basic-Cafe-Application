@@ -1,0 +1,83 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace Kahvehane_Uygulaması
+{
+    public partial class Kayıt_ol : Form
+    {
+
+        Baglanti baglan = new Baglanti();
+        public Kayıt_ol()
+        {
+            InitializeComponent();
+        }
+
+        private void btn_Geridon_KayıtOl_Click(object sender, EventArgs e)
+        {
+
+            DialogResult Uyarımesajı = MessageBox.Show("Yaptığınız işlem iptal edilecektir onaylıyor musunuz?", "Uyarı", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (Uyarımesajı == DialogResult.Yes)
+            {
+                SqlCommand sil = new SqlCommand("DELETE FROM User_ where Kullanıcı_Adı=@p1 and Sifre=@p2", baglan.SQL());
+
+                sil.Parameters.AddWithValue("@p1", kayıt_txtKullaniciAdi.Text);
+                sil.Parameters.AddWithValue("@p2", kyt_txtsifre_onay.Text);
+
+                sil.ExecuteNonQuery();
+
+                FrmGiris giris = new FrmGiris();
+
+                giris.Show();
+                this.Hide();
+            }
+        }
+
+        private void btn_Kaydet_kullanici_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(kayıt_txtKullaniciAdi.Text) && string.IsNullOrEmpty(kyt_txtsifre_onay.Text) && string.IsNullOrEmpty(kayıt_txtSifre.Text))
+            {
+
+                MessageBox.Show("Boş değer veya hatalı giriş yaptınız!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+
+            }
+            else
+            {
+
+                if (kyt_txtsifre_onay.Text != kayıt_txtSifre.Text)
+                {
+
+                    MessageBox.Show("Şifreler Uyumlu Değil Kontrol edin!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+
+                }
+                else
+                {
+                    SqlCommand kayit = new SqlCommand("INSERT INTO User_ (Kullanıcı_Adı,Sifre) values (@p1,@p2)", baglan.SQL());
+
+                    kayit.Parameters.AddWithValue("@p1", kayıt_txtKullaniciAdi.Text);
+                    kayit.Parameters.AddWithValue("@p2", kyt_txtsifre_onay.Text);
+
+                    kayit.ExecuteNonQuery();
+
+                    MessageBox.Show("Başarıyla kayıt oldunuz !", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    FrmGiris geridon = new FrmGiris();
+
+                    geridon.Show();
+
+                    this.Hide();
+                }
+            }
+        }
+    }
+}
