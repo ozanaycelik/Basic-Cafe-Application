@@ -1,0 +1,101 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Windows.Forms;
+
+namespace Kahvehane_Uygulaması
+{
+    public partial class frm_Siparislerim : Form
+    {
+        public frm_Siparislerim()
+        {
+            InitializeComponent();
+        }
+
+        Baglanti b2 = new Baglanti();
+        private void çıkışToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void anaMenüToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AnaMenü a1 = new AnaMenü();
+
+            this.Close();
+            a1.Show();
+        }
+
+        public void Listele()
+        {
+
+
+            SqlCommand listele = new SqlCommand("Select * from Siparis", b2.SQL());
+
+            SqlDataAdapter da = new SqlDataAdapter(listele);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            dataGridView1.DataSource = dt;
+        }
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Listele();
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            txt2_SiparisID.Text = dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
+
+            txt2_musAd.Text = dataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
+
+            txt2_Soyad.Text = dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
+
+            rtb2_musAdres.Text = dataGridView1.Rows[e.RowIndex].Cells[3].Value.ToString();
+
+            txt2_ItmName.Text = dataGridView1.Rows[e.RowIndex].Cells[4].Value.ToString();
+
+            txt2_ItmAmount.Text = dataGridView1.Rows[e.RowIndex].Cells[6].Value.ToString();
+
+            txt2_totalprice.Text = dataGridView1.Rows[e.RowIndex].Cells[5].Value.ToString();
+        }
+
+        private void btn2_update_Click(object sender, EventArgs e)
+        {
+            
+
+            SqlCommand update = new SqlCommand("Update Siparis set Cus_Name=@p1,Cus_Surname=@p2,Cus_Adress=@p3,Itm_Name =@p4,Itm_Price =@p5,Amount=@p6 where Sipariş_ID=@p7", b2.SQL());
+
+            update.Parameters.AddWithValue("@p1", txt2_musAd.Text);
+            update.Parameters.AddWithValue("@p2", txt2_Soyad.Text);
+            update.Parameters.AddWithValue("@p3", rtb2_musAdres.Text);
+            update.Parameters.AddWithValue("@p4", txt2_ItmName.Text);
+            update.Parameters.AddWithValue("@p5", txt2_totalprice.Text);
+            update.Parameters.AddWithValue("@p6", txt2_ItmAmount.Text);
+            update.Parameters.AddWithValue("@p7", txt2_SiparisID.Text);
+
+            update.ExecuteNonQuery();
+
+
+            Listele();
+
+        }
+
+        private void btn2_delete_Click(object sender, EventArgs e)
+        {
+            
+
+            SqlCommand delete = new SqlCommand("Delete From Siparis where Sipariş_ID=@p1", b2.SQL());
+
+            delete.Parameters.AddWithValue("@p1", txt2_SiparisID.Text);
+
+            delete.ExecuteNonQuery();
+
+            Listele();
+
+
+        }
+    }
+}
